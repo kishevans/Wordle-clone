@@ -1,5 +1,47 @@
 document.addEventListener("DOMContentLoaded", () => {
     createSquares();
+
+    let guessedWords = [[]]
+    let availableSpace = 1;
+    let wordy = 'kishy';
+
+    const keys =document.querySelectorAll(".keyboard-row button")
+
+    
+    function getCurrentWordArr(){
+        const numberofGuessedWords = guessedWords.length
+        return guessedWords[numberofGuessedWords-1]
+    }
+    function updateGuessedWords(letter){
+        const currentWordArr = getCurrentWordArr()
+        if(currentWordArr && currentWordArr.length<5){
+            currentWordArr.push(letter)
+
+            const availableSpaceEl = document.getElementById(String(availableSpace))
+            availableSpace = availableSpace + 1
+            availableSpaceEl.textContent = letter;
+        }
+
+    }
+
+    function handleSubmitWord(){
+        const currentWordArr = getCurrentWordArr();
+        if(currentWordArr.length !== 5){
+            window.alert("Word must have 5 letters!")
+        }
+
+        const currentWord = currentWordArr.join('')
+        
+
+        if(currentWord === wordy){
+            window.alert("Congratulations!")
+        }
+        if(guessedWords.length === 6){
+            window.alert(`Sorry, You have no more guesses!The word is ${wordy}.`)
+        }
+        
+        guessedWords.push([])
+    }
     function createSquares(){
         const gameBoard = document.getElementById("board");
 
@@ -9,5 +51,18 @@ document.addEventListener("DOMContentLoaded", () => {
             square.setAttribute("id",index + 1);
             gameBoard.appendChild(square);  
         }
+    }
+
+    for (let i = 0; i < keys.length; i++) {
+        keys[i].onclick = ({ target }) =>{
+            const letter = target.getAttribute("data-key");
+
+            if(letter === 'enter'){
+                handleSubmitWord()
+                return;
+            }
+
+            updateGuessedWords(letter)
+        };
     }
 })
