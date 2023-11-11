@@ -1,14 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
     createSquares();
+    getNewWord();
 
     let guessedWords = [[]]
     let availableSpace = 1;
-    let word  = 'kishy';
+    let word ;
 
     let guessedWordCount = 0;
 
     const keys =document.querySelectorAll(".keyboard-row button")
 
+    async function getNewWord(){
+        const url = 'https://wordsapiv1.p.rapidapi.com/words/?random=true&lettersMin=5&lettersMax=5';
+        const options = {
+        method: 'GET',
+        headers: {
+            'X-RapidAPI-Key': 'apiKey',
+            'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com'
+        }
+        };
+
+        try {
+            const response = await fetch(url, options);
+            const result = await response.json();
+            word = result.word
+            console.log(result);
+        } 
+        catch (error) {
+            console.error(error);
+        }
+    }
     
     function getCurrentWordArr(){
         const numberofGuessedWords = guessedWords.length
