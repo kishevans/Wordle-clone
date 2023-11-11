@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let guessedWords = [[]]
     let availableSpace = 1;
-    let wordy = 'kishy';
+    let word  = 'kishy';
 
     let guessedWordCount = 0;
 
@@ -25,6 +25,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     }
+    function getTileColor(letter, index){
+        const isCorrectLetter =word.includes(letter)
+        if(!isCorrectLetter){
+            return "rgb(58,58,60)";
+        } 
+        const letterInThatPositiion = word.charAt(index);
+        const isCorrectPosition = (letter === letterInThatPositiion);
+        if(isCorrectPosition){
+            return "rgb(83,141,78)";
+        }
+        return "rgb(181, 159, 59)";
+    }
 
     function handleSubmitWord(){
         const currentWordArr = getCurrentWordArr();
@@ -39,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const interval = 200;
         currentWordArr.forEach((letter,index)=> {
             setTimeout(() => {
-                const tileColor = "rgb(58,58,60)";
+                const tileColor = getTileColor(letter, index);
                 const letterId = firstLetterId + index;
                 const letterEl = document.getElementById(letterId);
                 letterEl.classList.add("animate__flipInX");
@@ -48,11 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });  
         guessedWordCount += 1;
 
-        if(currentWord === wordy){
+        if(currentWord === word ){
             window.alert("Congratulations!")
         }
         if(guessedWords.length === 6){
-            window.alert(`Sorry, You have no more guesses!The word is ${wordy}.`)
+            window.alert(`Sorry, You have no more guesses!The word is ${word }.`)
         }
         
         guessedWords.push([])
@@ -63,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let index = 0; index < 30; index++) {
             let square = document.createElement("div");
             square.classList.add("square");
-            square.classList.add("animate_animated");
+            square.classList.add("animate__animated");
             square.setAttribute("id", index + 1);
             gameBoard.appendChild(square);  
         }
