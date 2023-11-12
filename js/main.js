@@ -1,10 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
+    
     createSquares();
     getNewWord();
 
     let guessedWords = [[]]
     let availableSpace = 1;
     let word ;
+    
 
     let guessedWordCount = 0;
 
@@ -15,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const options = {
         method: 'GET',
         headers: {
-            'X-RapidAPI-Key': 'apiKey',
+            'X-RapidAPI-Key': apiKey,
             'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com'
         }
         };
@@ -67,28 +69,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const currentWord = currentWordArr.join('')
 
-        const firstLetterId = guessedWordCount * 5 + 1;
+        fetch(
+            `https://wordsapiv1.p.rapidapi.com/words/${currentWord}`,
+            {
+                method: "GET",
+                headers: {
+                    'X-RapidAPI-Key': apiKey,
+                    'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com'
+                },
+            }
+        ).then((res) => {
+            if(!res.ok){
+                throw Error()
+            }
+            const firstLetterId = guessedWordCount * 5 + 1;
 
-        const interval = 200;
-        currentWordArr.forEach((letter,index)=> {
-            setTimeout(() => {
-                const tileColor = getTileColor(letter, index);
-                const letterId = firstLetterId + index;
-                const letterEl = document.getElementById(letterId);
-                letterEl.classList.add("animate__flipInX");
-                letterEl.style = `background-color:${tileColor};border-color:${tileColor}`;
-            },interval * index)
-        });  
-        guessedWordCount += 1;
+            const interval = 200;
+            currentWordArr.forEach((letter,index)=> {
+                setTimeout(() => {
+                    const tileColor = getTileColor(letter, index);
+                    const letterId = firstLetterId + index;
+                    const letterEl = document.getElementById(letterId);
+                    letterEl.classList.add("animate__flipInX");
+                    letterEl.style = `background-color:${tileColor};border-color:${tileColor}`;
+                },interval * index)
+            });  
+            guessedWordCount += 1;
 
-        if(currentWord === word ){
-            window.alert("Congratulations!")
-        }
-        if(guessedWords.length === 6){
-            window.alert(`Sorry, You have no more guesses!The word is ${word }.`)
-        }
-        
-        guessedWords.push([])
+            if(currentWord === word ){
+                window.alert("Congratulations!")
+            }
+            if(guessedWords.length === 6){
+                window.alert(`Sorry, You have no more guesses!The word is ${word }.`)
+            }
+            
+            guessedWords.push([])
+        }) .catch(() => {
+            window.alert("Word is not recognized!");
+        });
     }
     function createSquares(){
         const gameBoard = document.getElementById("board");
@@ -101,13 +119,26 @@ document.addEventListener("DOMContentLoaded", () => {
             gameBoard.appendChild(square);  
         }
     }
+    function handleDeleteLetter(){
+        const currentWordArr = getCurrentWordArr()
+        const removedLetter = currentWordArr.pop()
 
+        guessedWords[guessedWords.length - 1] = currentWordArr
+
+        const lastLetterEl = document.getElementById(String(availableSpace - 1))
+        lastLetterEl.textContent = "";
+        availableSpace = availableSpace - 1;
+    }
     for (let i = 0; i < keys.length; i++) {
         keys[i].onclick = ({ target }) =>{
             const letter = target.getAttribute("data-key");
 
             if(letter === 'enter'){
                 handleSubmitWord()
+                return;
+            }
+            if (letter === 'del'){
+                handleDeleteLetter()
                 return;
             }
 
